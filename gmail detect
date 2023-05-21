@@ -1,0 +1,37 @@
+function onNewEmailTrigger() {
+  var label = GmailApp.getUserLabelByName('NewEmailTrigger'); // Create or retrieve a label to mark processed emails
+  var threads = GmailApp.search('is:unread label:inbox'); // Search for unread emails in the inbox
+
+  for (var i = 0; i < threads.length; i++) {
+    var thread = threads[i];
+    var messages = thread.getMessages();
+
+    for (var j = 0; j < messages.length; j++) {
+      var message = messages[j];
+      var subject = message.getSubject();
+      
+      // Check if the email subject begins with the specific phrase
+      if (subject.startsWith("Genome Writers Guild: A New Order has Arrived")) {
+        // Process the email
+        var sender = message.getFrom();
+        var body = message.getPlainBody();
+        
+        // Perform any actions or logic you want with the email data
+        // For example, you can send a reply, save the data to a spreadsheet, or perform some other task
+        
+        // Mark the email as processed
+        thread.addLabel(label);
+      }
+    }
+  }
+}
+
+// Set up the trigger to run on email arrival
+function createEmailTrigger() {
+  var trigger = ScriptApp.newTrigger('onNewEmailTrigger')
+    .forUserCalendar('me')
+    .onNewEmail()
+    .create();
+  
+  Logger.log('Email trigger created.');
+}
