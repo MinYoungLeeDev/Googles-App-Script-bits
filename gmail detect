@@ -9,15 +9,19 @@ function onNewEmailTrigger() {
     for (var j = 0; j < messages.length; j++) {
       var message = messages[j];
       var subject = message.getSubject();
+      var body = message.getPlainBody();
       
       // Check if the email subject begins with the specific phrase
       if (subject.startsWith("Genome Writers Guild: A New Order has Arrived")) {
         // Process the email
         var sender = message.getFrom();
-        var body = message.getPlainBody();
         
         // Perform any actions or logic you want with the email data
         // For example, you can send a reply, save the data to a spreadsheet, or perform some other task
+        
+        // Log the subject and body of the email
+        Logger.log("Subject: " + subject);
+        Logger.log("Body: " + body);
         
         // Mark the email as processed
         thread.addLabel(label);
