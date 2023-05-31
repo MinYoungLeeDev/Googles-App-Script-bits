@@ -1,0 +1,42 @@
+function organizeSquareSpaceReceipts() {
+  var squareSpaceLabelName = ""; // Change this to your label name
+  
+  var threads = GmailApp.search('from:notifications@squarespace.com subject:"New Order Notification"');
+  var squareSpaceLabel = createLabel(squareSpaceLabelName);
+  
+  for (var i = 0; i < threads.length; i++) {
+    var thread = threads[i];
+    var messages = thread.getMessages();
+    
+    for (var j = 0; j < messages.length; j++) {
+      var message = messages[j];
+      
+      // Apply the SquareSpace label to the email
+      message.getThread().addLabel(squareSpaceLabel);
+    }
+  }
+  
+  Logger.log("SquareSpace receipt emails have been organized!");
+}
+
+function createLabel(labelName) {
+  var labels = GmailApp.getUserLabels();
+  
+  for (var i = 0; i < labels.length; i++) {
+    if (labels[i].getName() === labelName) {
+      return labels[i]; // Return the existing label if it already exists
+    }
+  }
+  
+  return GmailApp.createLabel(labelName); // Create a new label if it doesn't exist
+}
+
+/*
+How to use 
+  Open your Google Sheets or Google Apps Script editor (script.google.com).
+  Create a new script project or open an existing one.
+  Copy and paste the above code into the editor.
+  Customize the squareSpaceLabelName variable with your desired label name.
+  Save the script.
+  Run the organizeSquareSpaceReceipts() function by clicking the play button or using the "Run" menu.
+*/
