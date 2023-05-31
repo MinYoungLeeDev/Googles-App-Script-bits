@@ -1,0 +1,21 @@
+import requests
+from bs4 import BeautifulSoup
+
+url = ""
+response = requests.get(url)
+soup = BeautifulSoup(response.content, "html.parser")
+
+domain_elements = soup.find_all("div", class_="mdc-card domain-card")
+for domain_element in domain_elements:
+    domain_name = domain_element.find("div", class_="name").text.strip()
+    expiration_date = domain_element.find("div", class_="expiration-date").text.strip()
+    privacy_status = domain_element.find("div", class_="privacy-status").text.strip()
+
+    print("Domain Name:", domain_name)
+    print("Expiration Date:", expiration_date)
+    print("Privacy Status:", privacy_status)
+    print()
+
+/*
+pip install beautifulsoup4
+*/
