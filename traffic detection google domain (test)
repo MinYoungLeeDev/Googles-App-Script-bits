@@ -1,0 +1,37 @@
+import datetime
+from google.oauth2.service_account import Credentials
+from googleapiclient.discovery import build
+
+# Set up Google Analytics credentials
+credentials = Credentials.from_service_account_file('/path/to/credentials.json')
+VIEW_ID = 'your-view-id'  # Replace with your Google Analytics view ID
+
+# Set up date range for querying
+start_date = datetime.date.today() - datetime.timedelta(days=7)
+end_date = datetime.date.today()
+
+# Set up the Google Analytics Reporting API
+analytics = build('analyticsreporting', 'v4', credentials=credentials)
+
+# Query the Google Analytics API to retrieve traffic data
+def get_traffic_data():
+    response = analytics.reports().batchGet(
+        body={
+            'reportRequests': [
+                {
+                    'viewId': VIEW_ID,
+                    'dateRanges': [{'startDate': start_date.strftime('%Y-%m-%d'), 'endDate': end_date.strftime('%Y-%m-%d')}],
+                    'metrics': [{'expression': 'ga:sessions'}],
+                    'dimensions': [{'name': 'ga:date'}],
+                    'pageSize': 10000
+                }]
+        }
+    ).execute()
+
+    report = response['reports'][0]
+    rows = report['data']['rows']
+
+    for row in rows:
+        date = row['dimensions'][0]
+        sessions = int(row['metrics'][0]['values'][0])
+        print(f"Date: {date}, Sessions: {sessions}")
