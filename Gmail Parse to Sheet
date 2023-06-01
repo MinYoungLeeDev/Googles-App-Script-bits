@@ -15,7 +15,7 @@ function getGamilEmails(){
 
 function extractContent(message, messageCount){
   //Put your sheet ID here 
-  var spreadSheetID = '';
+  var spreadSheetID = '1Kc7o8ejsWUjwX-4_RwEv1rmc4qJH267AITQ8slOiQgA';
   //Put your sheet name here.  It's the one on the bottom of the page 
   var sheetName = "initial_input";
   var ss = SpreadsheetApp.openById(spreadSheetID);
@@ -27,9 +27,22 @@ function extractContent(message, messageCount){
   var squarespaceReceipt = '';
   //Pick whatever for the subject for the receipts 
   squarespaceReceipt = subjectText.substring(0,6);
-  //Your target substring is checked here
-  if(squarespaceReceipt == ''){
-    sheet.appendRow([subjectText, fromSend, toSend, bodyText]);
+  if(squarespaceReceipt == 'Genome'){
+    sheet.appendRow([subjectText, fromSend, toSend, extractPersonalInfo(bodyText)]);
+  }
+}
+//Conditional substring for the email content 
+function extractPersonalInfo(str){
+  var text = str;
+  //Start 
+  var startCondition = 'BILLED TO';
+  //end
+  var endCondition = 'Item Subtotal';
+  var startIndex = text.indexOf(startCondition);
+  var endIndex = text.indexOf(endCondition, startIndex + startCondition.length);
+  if (startIndex !== -1 && endIndex !== -1){
+    var subtext = text.substring(startIndex + startCondition.length, endIndex);
+    return(subtext);
   }
 }
 
@@ -45,7 +58,7 @@ function onOpen(e){
   Create a new script project or open an existing one.
   Copy and paste the above code into the editor.
   Customize "spreadSheetID" and "sheetName" to your sheet.
-  Fill the rest 
+  Fill the for extractContent and extractPersonalInfo
   Save the script.
   Click your new button to in the sheet menu.
 */
