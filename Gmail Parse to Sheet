@@ -1,0 +1,51 @@
+//parse Gmail into Google Sheets
+function getGamilEmails(){
+  var threads = GmailApp.getInboxThreads();
+  for(var i=0; i<threads.length; i++){
+    var messages =threads[i].getMessages();
+    var messageCount = threads[i].getMessageCount();
+    for(var j=0; j<messages.length; j++){
+      message = messages[j];
+      if (message.isInInbox()){
+        extractContent (message, messageCount);
+      }
+    }
+  }
+}
+
+function extractContent(message, messageCount){
+  //Put your sheet ID here 
+  var spreadSheetID = '';
+  //Put your sheet name here.  It's the one on the bottom of the page 
+  var sheetName = "initial_input";
+  var ss = SpreadsheetApp.openById(spreadSheetID);
+  var sheet = ss.getSheetByName(sheetName);
+  var subjectText = message.getSubject();
+  var fromSend = message.getFrom();
+  var toSend = message.getTo();
+  var bodyText = message.getPlainBody();
+  var squarespaceReceipt = '';
+  //Pick whatever for the subject for the receipts 
+  squarespaceReceipt = subjectText.substring(0,6);
+  //Your target substring is checked here
+  if(squarespaceReceipt == ''){
+    sheet.appendRow([subjectText, fromSend, toSend, bodyText]);
+  }
+}
+
+function onOpen(e){
+  SpreadsheetApp.getUi()
+  .createMenu('Parse Emails')
+  .addItem('Get Email', 'getGamilEmails')
+  .addToUi();
+}
+/*
+  How to use 
+  Open your Google Sheets or Google Apps Script editor (script.google.com).
+  Create a new script project or open an existing one.
+  Copy and paste the above code into the editor.
+  Customize "spreadSheetID" and "sheetName" to your sheet.
+  Fill the rest 
+  Save the script.
+  Click your new button to in the sheet menu.
+*/
