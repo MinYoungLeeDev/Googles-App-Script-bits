@@ -1,0 +1,66 @@
+//parse Gmail into Google Sheets
+function getGamilEmails(){
+  var threads = GmailApp.getInboxThreads();
+  for(var i=0; i<threads.length; i++){
+    var messages =threads[i].getMessages();
+    var messageCount = threads[i].getMessageCount();
+    for(var j=0; j<messages.length; j++){
+      message = messages[j];
+      if (message.isInInbox()){
+        extractContent(message, messageCount);
+      }
+    }
+  }
+}
+
+function extractContent(message, messageCount){
+  // Put your sheet ID here 
+  var spreadSheetID = '1Kc7o8ejsWUjwX-4_RwEv1rmc4qJH267AITQ8slOiQgA';
+  // Put your sheet name here. It's the one at the bottom of the page 
+  var sheetName = "initial_input";
+  var ss = SpreadsheetApp.openById(spreadSheetID);
+  var sheet = ss.getSheetByName(sheetName);
+  var subjectText = message.getSubject();
+  var fromSend = message.getFrom();
+  var toSend = message.getTo();
+  var bodyText = message.getPlainBody();
+  var squarespaceReceipt = '';
+
+  squarespaceReceipt = subjectText.substring(0, 6);
+  if (squarespaceReceipt === 'Genome' && bodyText.includes('Membership')) {
+    sheet.appendRow([subjectText, fromSend, toSend, extractPersonalInfo(bodyText)]);
+  }
+}
+
+// Conditional substring for the email content 
+function extractPersonalInfo(str){
+  var text = str;
+  // Start 
+  var startCondition = 'BILLED TO';
+  // End
+  var endCondition = 'Item Subtotal';
+  var startIndex = text.indexOf(startCondition);
+  var endIndex = text.indexOf(endCondition, startIndex + startCondition.length);
+  if (startIndex !== -1 && endIndex !== -1){
+    var subtext = text.substring(startIndex + startCondition.length, endIndex);
+    return subtext;
+  }
+}
+
+function onOpen(e){
+  SpreadsheetApp.getUi()
+  .createMenu('Parse Emails')
+  .addItem('Get Email', 'getGamilEmails')
+  .addToUi();
+}
+
+/*
+  How to use 
+  Open your Google Sheets or Google Apps Script editor (script.google.com).
+  Create a new script project or open an existing one.
+  Copy and paste the above code into the editor.
+  Customize "spreadSheetID" and "sheetName" to your sheet.
+  Fill in the logic for extractContent and extractPersonalInfo.
+  Save the script.
+  Click your new button in the sheet menu.
+*/
