@@ -1,0 +1,27 @@
+function createYearlyCalendar() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  sheet.clear();  // Clear existing data (optional)
+
+  var startDate = new Date();
+  startDate.setMonth(0); // Start from January
+  startDate.setDate(1);  // Start from the first day of the month
+
+  var numWeeks = 52;  // Assuming a standard 52-week year
+  var daysInWeek = 7;
+  var weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  // Set the headers for each weekday
+  for (var i = 0; i < daysInWeek; i++) {
+    sheet.getRange(1, i + 2).setValue(weekdays[i]);
+  }
+
+  // Populate the calendar with dates
+  for (var week = 0; week < numWeeks; week++) {
+    sheet.getRange(week + 2, 1).setValue(startDate.toLocaleDateString());
+
+    for (var day = 0; day < daysInWeek; day++) {
+      sheet.getRange(week + 2, day + 2).setValue(startDate.toLocaleDateString());
+      startDate.setDate(startDate.getDate() + 1);
+    }
+  }
+}
