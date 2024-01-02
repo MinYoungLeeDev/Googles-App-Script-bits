@@ -1,0 +1,33 @@
+function createCalendarEvent() {
+  let events = SpreadsheetApp.getActiveSpreadsheet().getRangeByName("events").getValues();
+  let alreadyCreated = [];
+  let newEvents = []
+
+  events.forEach(function(e){
+    if(e[7]){
+      alreadyCreated.push(e[0])
+    }else{
+      newEvents.unshift(e[0])
+    }
+  });
+  
+  events.forEach(function(e){
+    if(!e[7]){
+      CalendarApp.getCalendarById("f7574e7b4d1ad00c9ecd7f1eba5bed329e8600e317cd387a400748d67f301d06@group.calendar.google.com").createEvent(
+        e[0],
+        new Date(e[1]),
+        new Date(e[2]),
+        //if you don't want the guests to get emailed, don't add the sendInvites: true part. It will default to false
+        {guests: e[6],sendInvites: true}
+      );
+    }
+  })
+  SpreadsheetApp.getUi().alert(`These were already created: ${alreadyCreated}`);
+  SpreadsheetApp.getUi().alert(`These were newly added: ${newEvents}`);
+}
+
+function getid(){
+  let calendarIDFromCell = SpreadsheetApp.getActiveSpreadsheet().getRangeByName("id").getValue();
+  Logger.log(calendarIDFromCell)
+}
+
